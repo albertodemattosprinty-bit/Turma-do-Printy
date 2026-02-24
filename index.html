@@ -14,16 +14,25 @@
   </head>
   <body>
     <header class="topo">
-      <h1>Turma do Printy2</h1>
-      <input
-        type="search"
-        id="pesquisa"
-        placeholder="Pesquisar músicas..."
-        aria-label="Pesquisar músicas"
-      />
+      <img src="logoprinty.png" alt="Logo Turma do Printy" class="logo-printy" />
     </header>
 
     <main>
+      <div class="pesquisa-global">
+        <button id="btn-toggle-pesquisa" class="btn-icone" aria-label="Abrir busca">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 2a8 8 0 1 0 4.9 14.3l4.4 4.4 1.4-1.4-4.4-4.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z" />
+          </svg>
+        </button>
+        <input
+          type="search"
+          id="pesquisa"
+          class="oculto"
+          placeholder="Pesquisar músicas, textos e vídeos"
+          aria-label="Pesquisar mídias"
+        />
+      </div>
+
       <section id="home" class="secao ativa">
         <h2>Escolha uma seção</h2>
         <div class="icones-home">
@@ -81,20 +90,22 @@
     </main>
 
     <footer id="player-fixo" class="player-fixo oculto">
+      <input id="barra-progresso" type="range" min="0" max="100" value="0" />
       <div class="controles-player">
-        <button id="btn-pausar" aria-label="Pausar música">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 5h3v14H7zm7 0h3v14h-3z" />
-          </svg>
+        <button id="btn-compartilhar" class="btn-controle" aria-label="Compartilhar música">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16a3 3 0 0 0-2.4 1.2l-6.3-3.2a3 3 0 0 0 0-2l6.3-3.2A3 3 0 1 0 15 7a2.9 2.9 0 0 0 .1.8l-6.3 3.2a3 3 0 1 0 0 2l6.3 3.2A3 3 0 1 0 18 16z"/></svg>
         </button>
-        <button id="btn-proxima" aria-label="Próxima música">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 5v14l10-7z" />
-            <path d="M18 5h2v14h-2z" />
-          </svg>
+        <button id="btn-anterior" class="btn-controle" aria-label="Música anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6v12l-8-6zm-9 0h2v12H9z"/></svg>
+        </button>
+        <button id="btn-pausar" class="btn-controle play-central" aria-label="Pausar música"></button>
+        <button id="btn-proxima" class="btn-controle" aria-label="Próxima música">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12l8-6zm9 0h2v12h-2z"/></svg>
+        </button>
+        <button id="btn-volume" class="btn-controle" aria-label="Silenciar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3.2 8.4 8H4v8h4.4L14 20.8V3.2zm3.5 4.3-1.4 1.4a4 4 0 0 1 0 6.2l1.4 1.4a6 6 0 0 0 0-9z"/></svg>
         </button>
       </div>
-      <input id="barra-progresso" type="range" min="0" max="100" value="0" />
       <div class="player-info">
         <strong id="musica-atual">Nenhuma música</strong>
       </div>
