@@ -24,5 +24,6 @@ const nomes = [
 
 export const musicas = nomes.map((nome) => ({
   arquivo: `${baseUrl}${encodeURIComponent(nome)}`,
-  nome
+  nome,
+  imagem: ''
 }));
