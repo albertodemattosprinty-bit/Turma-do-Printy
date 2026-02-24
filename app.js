@@ -57,6 +57,25 @@ const carregarListaDinamica = async (pasta, extensoesAceitas) => {
   }
 };
 
+const carregarMusicasDoJson = async () => {
+  try {
+    const resposta = await fetch('musicas.json', { cache: 'no-store' });
+    if (!resposta.ok) throw new Error('JSON de músicas indisponível');
+
+    const lista = await resposta.json();
+    if (!Array.isArray(lista)) throw new Error('Formato inválido');
+
+    return lista
+      .filter((item) => item && typeof item.nome === 'string' && typeof item.link === 'string')
+      .map((item) => ({
+        nome: item.nome,
+        arquivo: item.link
+      }));
+  } catch {
+    return [...musicasFallback];
+  }
+};
+
 const listasMudaram = (listaAtual, novaLista) => {
   const atual = listaAtual.map((item) => item.arquivo).sort().join('|');
   const nova = novaLista.map((item) => item.arquivo).sort().join('|');
@@ -199,11 +218,11 @@ const renderVideos = () => {
 };
 
 const carregarConteudo = async (forcarRender = false) => {
-  const musicasDinamicas = await carregarListaDinamica('Músicas', ['.mp3']);
+  const musicasDoJson = await carregarMusicasDoJson();
   const videosDinamicos = await carregarListaDinamica('Vídeos', ['.mp4', '.webm', '.mov']);
   const textosDinamicos = await carregarListaDinamica('Textos', ['.json', '.txt', '.rtf']);
 
-  const novasMusicas = musicasDinamicas.length ? musicasDinamicas : musicasFallback;
+  const novasMusicas = musicasDoJson;
   const novosVideos = videosDinamicos.length ? videosDinamicos : videosFallback;
   const novosTextos = textosDinamicos.length ? textosDinamicos : textosFallback;
 
