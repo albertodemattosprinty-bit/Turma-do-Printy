@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Turma do Printy - Mídias</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topo">
+      <h1>Turma do Printy</h1>
+      <input
+        type="search"
+        id="pesquisa"
+        placeholder="Pesquisar músicas..."
+        aria-label="Pesquisar músicas"
+      />
+    </header>
+
+    <main>
+      <section id="home" class="secao ativa">
+        <h2>Escolha uma seção</h2>
+        <div class="icones-home">
+          <button class="icone-btn" data-destino="musicas" aria-label="Abrir músicas">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v12.26A4 4 0 1 0 14 19V7h6V3z" />
+            </svg>
+            <span>Músicas</span>
+          </button>
+
+          <button class="icone-btn" data-destino="textos" aria-label="Abrir textos">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 4h16v2H4zm0 5h16v2H4zm0 5h10v2H4zm0 5h16v2H4z" />
+            </svg>
+            <span>Textos</span>
+          </button>
+
+          <button class="icone-btn" data-destino="videos" aria-label="Abrir vídeos">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m10 8 6 4-6 4z" />
+              <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 2v10h16V7z" />
+            </svg>
+            <span>Vídeos</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="musicas" class="secao">
+        <div class="secao-header">
+          <button class="voltar" data-destino="home">← Voltar</button>
+          <h2>Músicas</h2>
+        </div>
+        <div id="lista-musicas" class="lista"></div>
+      </section>
+
+      <section id="textos" class="secao">
+        <div class="secao-header">
+          <button class="voltar" data-destino="home">← Voltar</button>
+          <h2>Textos</h2>
+        </div>
+        <div id="lista-textos" class="lista"></div>
+        <article id="visualizador-texto" class="visualizador oculto">
+          <h3 id="texto-titulo"></h3>
+          <p id="texto-conteudo"></p>
+        </article>
+      </section>
+
+      <section id="videos" class="secao">
+        <div class="secao-header">
+          <button class="voltar" data-destino="home">← Voltar</button>
+          <h2>Vídeos</h2>
+        </div>
+        <div id="lista-videos" class="lista"></div>
+      </section>
+    </main>
+
+    <footer id="player-fixo" class="player-fixo oculto">
+      <div class="player-info">
+        <strong id="musica-atual">Nenhuma música</strong>
+      </div>
+      <input id="barra-progresso" type="range" min="0" max="100" value="0" />
+      <div class="controles-player">
+        <button id="btn-pausar">Pausar</button>
+        <button id="btn-proxima">Próxima</button>
+      </div>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
