@@ -1,6 +1,6 @@
-import { musicas } from './Músicas.js';
-import { textos } from './Textos.js';
-import { videos } from './Vídeos.js';
+import { musicas as musicasFallback } from './Músicas.js';
+import { textos as textosFallback } from './Textos.js';
+import { videos as videosFallback } from './Vídeos.js';
 
 const secoes = [...document.querySelectorAll('.secao')];
 const listaMusicas = document.getElementById('lista-musicas');
@@ -15,6 +15,9 @@ const btnProxima = document.getElementById('btn-proxima');
 
 const audio = new Audio();
 let indiceAtual = -1;
+let musicas = [...musicasFallback];
+let textos = [...textosFallback];
+let videos = [...videosFallback];
 let musicaFiltrada = [...musicas];
 
 const normalizar = (valor) =>
@@ -24,6 +27,41 @@ const normalizar = (valor) =>
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, '')
     .toLowerCase();
+
+const nomeAmigavel = (arquivo) => arquivo.replace(/\.[^.]+$/i, '').replace(/[-_]/g, ' ');
+
+const coletarArquivosDoHTML = (html, pasta, extensoesAceitas) => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const links = [...doc.querySelectorAll('a[href]')]
+    .map((a) => a.getAttribute('href'))
+    .filter(Boolean)
+    .map((href) => decodeURIComponent(href.split('?')[0]))
+    .filter((href) => !href.endsWith('/'))
+    .map((href) => href.split('/').pop())
+    .filter((arquivo) => extensoesAceitas.some((ext) => arquivo.toLowerCase().endsWith(ext)));
+
+  return [...new Set(links)].map((arquivo) => ({
+    arquivo: `${pasta}/${arquivo}`,
+    nome: nomeAmigavel(arquivo)
+  }));
+};
+
+const carregarListaDinamica = async (pasta, extensoesAceitas) => {
+  try {
+    const resposta = await fetch(`${pasta}/`, { cache: 'no-store' });
+    if (!resposta.ok) throw new Error('Sem listagem de diretório');
+    const html = await resposta.text();
+    return coletarArquivosDoHTML(html, pasta, extensoesAceitas);
+  } catch {
+    return [];
+  }
+};
+
+const listasMudaram = (listaAtual, novaLista) => {
+  const atual = listaAtual.map((item) => item.arquivo).sort().join('|');
+  const nova = novaLista.map((item) => item.arquivo).sort().join('|');
+  return atual !== nova;
+};
 
 const mostrarSecao = (id) => {
   secoes.forEach((secao) => secao.classList.toggle('ativa', secao.id === id));
@@ -46,7 +84,7 @@ const tocarIndice = (indiceListaFiltrada) => {
   }
 
   indiceAtual = indiceOriginal;
-  audio.src = `Músicas/${musica.arquivo}`;
+  audio.src = musica.arquivo;
   audio.play();
   musicaAtual.textContent = musica.nome;
   playerFixo.classList.remove('oculto');
@@ -83,8 +121,8 @@ const renderMusicas = () => {
     download.addEventListener('click', (evento) => {
       evento.stopPropagation();
       const link = document.createElement('a');
-      link.href = `Músicas/${musica.arquivo}`;
-      link.download = musica.arquivo;
+      link.href = musica.arquivo;
+      link.download = musica.arquivo.split('/').pop();
       link.click();
     });
 
@@ -100,6 +138,24 @@ const renderMusicas = () => {
   marcarAtivo();
 };
 
+const obterConteudoTexto = async (arquivo) => {
+  if (arquivo.toLowerCase().endsWith('.json')) {
+    const resposta = await fetch(arquivo, { cache: 'no-store' });
+    const json = await resposta.json();
+    return {
+      titulo: json.titulo || nomeAmigavel(arquivo.split('/').pop()),
+      conteudo: json.conteudo || JSON.stringify(json, null, 2)
+    };
+  }
+
+  const resposta = await fetch(arquivo, { cache: 'no-store' });
+  const conteudo = await resposta.text();
+  return {
+    titulo: nomeAmigavel(arquivo.split('/').pop()),
+    conteudo
+  };
+};
+
 const renderTextos = async () => {
   listaTextos.innerHTML = '';
   const titulo = document.getElementById('texto-titulo');
@@ -112,10 +168,9 @@ const renderTextos = async () => {
     item.innerHTML = `<strong>${texto.nome}</strong>`;
 
     item.addEventListener('click', async () => {
-      const resposta = await fetch(texto.arquivo);
-      const json = await resposta.json();
-      titulo.textContent = json.titulo;
-      conteudo.textContent = json.conteudo;
+      const textoCarregado = await obterConteudoTexto(texto.arquivo);
+      titulo.textContent = textoCarregado.titulo;
+      conteudo.textContent = textoCarregado.conteudo;
       visualizador.classList.remove('oculto');
     });
 
@@ -141,6 +196,33 @@ const renderVideos = () => {
     });
     listaVideos.appendChild(item);
   });
+};
+
+const carregarConteudo = async (forcarRender = false) => {
+  const musicasDinamicas = await carregarListaDinamica('Músicas', ['.mp3']);
+  const videosDinamicos = await carregarListaDinamica('Vídeos', ['.mp4', '.webm', '.mov']);
+  const textosDinamicos = await carregarListaDinamica('Textos', ['.json', '.txt', '.rtf']);
+
+  const novasMusicas = musicasDinamicas.length ? musicasDinamicas : musicasFallback;
+  const novosVideos = videosDinamicos.length ? videosDinamicos : videosFallback;
+  const novosTextos = textosDinamicos.length ? textosDinamicos : textosFallback;
+
+  const alterouMusicas = listasMudaram(musicas, novasMusicas);
+  const alterouVideos = listasMudaram(videos, novosVideos);
+  const alterouTextos = listasMudaram(textos, novosTextos);
+
+  musicas = novasMusicas;
+  videos = novosVideos;
+  textos = novosTextos;
+
+  if (forcarRender || alterouMusicas) {
+    const termo = normalizar(pesquisa.value || '');
+    musicaFiltrada = musicas.filter((musica) => normalizar(musica.nome).includes(termo));
+    renderMusicas();
+  }
+
+  if (forcarRender || alterouTextos) await renderTextos();
+  if (forcarRender || alterouVideos) renderVideos();
 };
 
 document.querySelectorAll('[data-destino]').forEach((botao) => {
@@ -180,7 +262,6 @@ audio.addEventListener('ended', () => btnProxima.click());
 audio.addEventListener('play', atualizarBotoes);
 audio.addEventListener('pause', atualizarBotoes);
 
-renderMusicas();
-renderTextos();
-renderVideos();
+carregarConteudo(true);
+setInterval(() => carregarConteudo(), 15000);
 mostrarSecao('home');
