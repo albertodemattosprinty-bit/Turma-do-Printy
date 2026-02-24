@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Turma do Printy - Mídias2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -75,13 +81,22 @@
     </main>
 
     <footer id="player-fixo" class="player-fixo oculto">
-      <div class="player-info">
-        <strong id="musica-atual">Nenhuma música</strong>
+      <div class="controles-player">
+        <button id="btn-pausar" aria-label="Pausar música">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 5h3v14H7zm7 0h3v14h-3z" />
+          </svg>
+        </button>
+        <button id="btn-proxima" aria-label="Próxima música">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 5v14l10-7z" />
+            <path d="M18 5h2v14h-2z" />
+          </svg>
+        </button>
       </div>
       <input id="barra-progresso" type="range" min="0" max="100" value="0" />
-      <div class="controles-player">
-        <button id="btn-pausar">Pausar</button>
-        <button id="btn-proxima">Próxima</button>
+      <div class="player-info">
+        <strong id="musica-atual">Nenhuma música</strong>
       </div>
     </footer>
 

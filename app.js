@@ -13,6 +13,18 @@ const barraProgresso = document.getElementById('barra-progresso');
 const btnPausar = document.getElementById('btn-pausar');
 const btnProxima = document.getElementById('btn-proxima');
 
+const iconePausar = `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M7 5h3v14H7zm7 0h3v14h-3z" />
+  </svg>
+`;
+
+const iconeTocar = `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M8 5v14l11-7z" />
+  </svg>
+`;
+
 const audio = new Audio();
 let indiceAtual = -1;
 let musicas = [...musicasFallback];
@@ -112,7 +124,9 @@ const tocarIndice = (indiceListaFiltrada) => {
 };
 
 const atualizarBotoes = () => {
-  btnPausar.textContent = audio.paused ? 'Tocar' : 'Pausar';
+  const pausado = audio.paused;
+  btnPausar.innerHTML = pausado ? iconeTocar : iconePausar;
+  btnPausar.setAttribute('aria-label', pausado ? 'Tocar música' : 'Pausar música');
 };
 
 const marcarAtivo = () => {
@@ -136,7 +150,13 @@ const renderMusicas = () => {
 
     const download = document.createElement('button');
     download.className = 'download';
-    download.textContent = 'Download';
+    download.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 3h2v9h3l-4 5-4-5h3z" />
+        <path d="M5 19h14v2H5z" />
+      </svg>
+    `;
+    download.setAttribute('aria-label', `Baixar ${musica.nome}`);
     download.addEventListener('click', (evento) => {
       evento.stopPropagation();
       const link = document.createElement('a');
